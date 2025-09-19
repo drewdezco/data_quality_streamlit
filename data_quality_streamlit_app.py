@@ -19,12 +19,14 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main-header {
-        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        color: white;
+        background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);
+        color: #e5e7eb;
         padding: 2rem;
         border-radius: 10px;
         text-align: center;
         margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
     .feature-card {
@@ -122,20 +124,33 @@ st.markdown("""
     
     /* Tab styling for better visibility in dark mode */
     .stTabs [data-baseweb="tab-list"] {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 8px;
-        padding: 0.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background-color: transparent;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0;
+        border-radius: 0;
+        border: none;
     }
     
     .stTabs [data-baseweb="tab"] {
         color: #9ca3af;
-        background-color: transparent;
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0.75rem 1.5rem !important;
+        border-bottom: 2px solid transparent !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #e5e7eb !important;
+        border-bottom: 2px solid rgba(96, 165, 250, 0.5) !important;
     }
     
     .stTabs [aria-selected="true"] {
-        background-color: #1e40af !important;
-        color: white !important;
+        background-color: transparent !important;
+        color: #60a5fa !important;
+        border-bottom: 2px solid #60a5fa !important;
+        font-weight: 600 !important;
     }
     
     /* Improve text readability in dataframes */
