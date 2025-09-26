@@ -102,9 +102,6 @@ duckdb>=0.9.0
 ### SQLite vs DuckDB Demo
 ![Database Demo](screenshots/sqlite_vs_duckdb.png)
 
-👉 Place screenshots in a `/screenshots/` folder and update links as needed.  
-You can also record a short **GIF** demo with tools like [LiceCap](https://www.cockos.com/licecap/) or OBS.
-
 ---
 
 ## 🤝 Contributing
