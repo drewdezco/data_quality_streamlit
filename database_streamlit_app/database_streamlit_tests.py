@@ -197,37 +197,45 @@ with tab2:
     st.subheader("Sample Data")
     st.dataframe(df.head())
 
-    sqlite_conn = init_sqlite(df)
-    duckdb_conn = init_duckdb(df)
-
     query = st.text_area(
         "Enter a SQL query (works on both):",
         "SELECT department, AVG(age) as avg_age FROM employees GROUP BY department;"
     )
 
     if st.button("Run Query on Small Data"):
+        # ----- SQLite total time -----
+        start = time.time()
+        sqlite_conn = init_sqlite(df)
+        sqlite_result, _ = run_query(sqlite_conn, query, "sqlite")
+        sqlite_total = (time.time() - start) * 1000
+
+        # ----- DuckDB total time -----
+        start = time.time()
+        duckdb_conn = init_duckdb(df)
+        duckdb_result, _ = run_query(duckdb_conn, query, "duckdb")
+        duckdb_total = (time.time() - start) * 1000
+
         col1, col2 = st.columns(2)
 
         with col1:
             st.write("### SQLite Results")
-            sqlite_result, sqlite_time = run_query(sqlite_conn, query, "sqlite")
             st.dataframe(sqlite_result)
-            st.caption(f"⏱ SQLite took {sqlite_time:.2f} ms")
+            st.caption(f"⏱ Total time: {sqlite_total:.2f} ms")
 
         with col2:
             st.write("### DuckDB Results")
-            duckdb_result, duckdb_time = run_query(duckdb_conn, query, "duckdb")
             st.dataframe(duckdb_result)
-            st.caption(f"⏱ DuckDB took {duckdb_time:.2f} ms")
+            st.caption(f"⏱ Total time: {duckdb_total:.2f} ms")
 
         # ----- Runtime comparison chart -----
-        st.subheader("Runtime Comparison (ms)")
+        st.subheader("Total Runtime Comparison (ms)")
         runtime_df = pd.DataFrame({
             "Engine": ["SQLite", "DuckDB"],
-            "Runtime (ms)": [sqlite_time, duckdb_time]
+            "Total Time (ms)": [sqlite_total, duckdb_total]
         }).set_index("Engine")
 
         st.bar_chart(runtime_df, use_container_width=True)
+
 
 # -------------------------
 # Tab 3 — Big Data Demo
@@ -237,55 +245,56 @@ with tab3:
 
     rows = st.slider("Number of rows to generate", 1_000_000, 10_000_000, 1_000_000, step=1_000_000)
 
-    st.write("Generating synthetic dataset...")
-    np.random.seed(42)
-    big_df = pd.DataFrame({
-        "id": np.arange(rows),
-        "age": np.random.randint(18, 65, size=rows),
-        "salary": np.random.randint(40_000, 120_000, size=rows),
-        "department": np.random.choice(["HR", "IT", "Finance", "Marketing"], size=rows)
-    })
-    st.success(f"Generated {rows:,} rows")
-
-    st.subheader("Dataset Preview")
-    st.dataframe(big_df.head())
-
-    st.subheader("Schema / Column Info")
-    st.json({
-        "id": "Unique row identifier",
-        "age": "Employee age (int)",
-        "salary": "Employee salary (int, USD)",
-        "department": "Department (categorical: HR, IT, Finance, Marketing)"
-    })
-
-    sqlite_conn = init_sqlite(big_df)
-    duckdb_conn = init_duckdb(big_df)
-
     query = st.text_area(
         "Enter a SQL query for big data:",
         "SELECT department, AVG(salary) as avg_salary, COUNT(*) as cnt FROM employees GROUP BY department;"
     )
 
     if st.button("Run Query on Big Data"):
+        # ----- SQLite total time -----
+        start = time.time()
+        np.random.seed(42)
+        big_df = pd.DataFrame({
+            "id": np.arange(rows),
+            "age": np.random.randint(18, 65, size=rows),
+            "salary": np.random.randint(40_000, 120_000, size=rows),
+            "department": np.random.choice(["HR", "IT", "Finance", "Marketing"], size=rows)
+        })
+        sqlite_conn = init_sqlite(big_df)
+        sqlite_result, _ = run_query(sqlite_conn, query, "sqlite")
+        sqlite_total = (time.time() - start) * 1000
+
+        # ----- DuckDB total time -----
+        start = time.time()
+        np.random.seed(42)
+        big_df = pd.DataFrame({
+            "id": np.arange(rows),
+            "age": np.random.randint(18, 65, size=rows),
+            "salary": np.random.randint(40_000, 120_000, size=rows),
+            "department": np.random.choice(["HR", "IT", "Finance", "Marketing"], size=rows)
+        })
+        duckdb_conn = init_duckdb(big_df)
+        duckdb_result, _ = run_query(duckdb_conn, query, "duckdb")
+        duckdb_total = (time.time() - start) * 1000
+
+        # ----- Show results -----
         col1, col2 = st.columns(2)
 
         with col1:
             st.write("### SQLite Results")
-            sqlite_result, sqlite_time = run_query(sqlite_conn, query, "sqlite")
             st.dataframe(sqlite_result)
-            st.caption(f"⏱ SQLite took {sqlite_time:.2f} ms")
+            st.caption(f"⏱ Total time: {sqlite_total:.2f} ms")
 
         with col2:
             st.write("### DuckDB Results")
-            duckdb_result, duckdb_time = run_query(duckdb_conn, query, "duckdb")
             st.dataframe(duckdb_result)
-            st.caption(f"⏱ DuckDB took {duckdb_time:.2f} ms")
+            st.caption(f"⏱ Total time: {duckdb_total:.2f} ms")
 
         # ----- Runtime comparison chart -----
-        st.subheader("Runtime Comparison (ms)")
+        st.subheader("Total Runtime Comparison (ms)")
         runtime_df = pd.DataFrame({
             "Engine": ["SQLite", "DuckDB"],
-            "Runtime (ms)": [sqlite_time, duckdb_time]
+            "Total Time (ms)": [sqlite_total, duckdb_total]
         }).set_index("Engine")
 
         st.bar_chart(runtime_df, use_container_width=True)
