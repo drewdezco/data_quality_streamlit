@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Quality Toolkit</title>
+    <style>
+        :root {
+            /* DARK THEME COLOR SCHEME - MATCHING STREAMLIT APP */
+            /* Primary brand colors */
+            --primary-dark: #111827;
+            --primary-main: #1f2937;
+            --primary-light: #60a5fa;
+            --primary-accent: #3b82f6;
+            
+            /* Background colors */
+            --bg-gradient-start: #111827;
+            --bg-gradient-end: #374151;
+            --bg-white: #2d3748;
+            --bg-light-gray: rgba(255, 255, 255, 0.08);
+            --bg-medium-gray: rgba(255, 255, 255, 0.12);
+            
+            /* Text colors */
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-white: #e0e6ed;
+            
+            /* Interactive colors */
+            --button-bg: #1e40af;
+            --button-text: #ffffff;
+            --highlight-bg-start: rgba(96, 165, 250, 0.1);
+            --highlight-bg-end: rgba(96, 165, 250, 0.2);
+            --highlight-text: #60a5fa;
+            
+            /* Border and accent colors */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-border: #60a5fa;
+            --success-color: #4ade80;
+            
+            /* Shadow and effects */
+            --shadow-light: 0 5px 15px rgba(0,0,0,0.3);
+            --shadow-medium: 0 10px 30px rgba(0,0,0,0.4);
+            --shadow-heavy: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-white);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            background: var(--bg-white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            padding: 40px;
+        }
+
+        .section:nth-child(even) {
+            background: var(--bg-light-gray);
+        }
+
+        .section h2 {
+            color: var(--text-primary);
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(45deg, var(--primary-accent), var(--primary-main));
+            border-radius: 2px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-medium);
+            border-left: 5px solid var(--accent-border);
+        }
+
+        .feature-card h3 {
+            color: var(--text-primary);
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-card .icon {
+            font-size: 1.8em;
+            margin-right: 15px;
+            color: var(--primary-accent);
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .step {
+            background: var(--bg-white);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+        }
+
+        .step-number {
+            background: linear-gradient(45deg, var(--primary-accent), var(--primary-main));
+            color: var(--text-white);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin: 0 auto 20px;
+        }
+
+        .example-box {
+            background: var(--bg-light-gray);
+            border: 2px dashed var(--accent-border);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .example-box::before {
+            content: 'Example';
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--bg-white);
+            padding: 0 10px;
+            color: var(--primary-accent);
+            font-weight: bold;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.9em;
+        }
+
+        .validation-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .validation-card {
+            background: var(--bg-white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow-light);
+            border-left: 4px solid var(--accent-border);
+        }
+
+        .validation-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .validation-card code {
+            background: rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Courier New', monospace;
+        }
+
+        .csv-example {
+            background: var(--bg-light-gray);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .csv-example table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .csv-example th,
+        .csv-example td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .csv-example th {
+            background: var(--bg-medium-gray);
+            font-weight: 600;
+        }
+
+        .highlight {
+            background: rgba(96, 165, 250, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #9ca3af;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-white);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--button-bg);
+            color: var(--button-text);
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 20px;
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .benefits {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .benefits li {
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .benefits li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .report-preview {
+            background: var(--bg-light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--bg-medium-gray);
+        }
+
+        .report-preview h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .preview-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .preview-tab {
+            padding: 8px 16px;
+            background: var(--primary-accent);
+            color: var(--text-white);
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .section {
+                padding: 30px 20px;
+            }
+            
+            .features-grid,
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation for scroll reveal */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>📊 Data Quality Toolkit</h1>
+            <p>Comprehensive data validation and quality reporting for your CSV datasets. Ensure data integrity with automated checks and detailed analytics.</p>
+        </header>
+
+        <main class="main-content">
+            <!-- What is it? -->
+            <section class="section fade-in">
+                <h2>🎯 What is this toolkit?</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">Our Data Quality Toolkit automatically analyzes your CSV files to identify data quality issues, generate comprehensive reports, and provide actionable insights. Perfect for data governance, compliance, and ensuring reliable analytics.</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3><span class="icon">🔍</span>Automated Validation</h3>
+                        <p>Run 15+ different validation rules including null checks, uniqueness, data types, formats, and custom business rules.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">📈</span>Interactive Reports</h3>
+                        <p>Get beautiful HTML reports with charts, field summaries, and detailed analysis that you can share with stakeholders.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">⚡</span>Fast & Scalable</h3>
+                        <p>Process datasets with thousands of rows in seconds. Optimized for performance with intelligent sampling.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How to use it -->
+            <section class="section fade-in">
+                <h2>🚀 How to Use the Toolkit</h2>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Upload CSV File</h3>
+                        <p>Provide your CSV dataset. The toolkit accepts files with any structure and automatically detects data types.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Define Validations (Optional)</h3>
+                        <p>Optionally specify custom validation rules to apply. The toolkit automatically runs standard validations or you can define your own.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Mark Critical Columns (Optional)</h3>
+                        <p>Optionally identify your most important data fields for prioritized analysis and enhanced monitoring.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Get Results</h3>
+                        <p>Receive comprehensive HTML reports with detailed insights, charts, and actionable recommendations.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CSV Example -->
+            <section class="section fade-in">
+                <h2>📋 Example CSV Data</h2>
+                <p>Your CSV file can contain any type of data. Here's an example employee dataset:</p>
+                
+                <div class="csv-example">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>employee_id</th>
+                                <th>first_name</th>
+                                <th>email</th>
+                                <th>department</th>
+                                <th>salary</th>
+                                <th>hire_date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>EMP001</td>
+                                <td>John</td>
+                                <td>john@company.com</td>
+                                <td>Engineering</td>
+                                <td>75000</td>
+                                <td>2023-01-15</td>
+                            </tr>
+                            <tr>
+                                <td>EMP002</td>
+                                <td>Sarah</td>
+                                <td>sarah@company.com</td>
+                                <td>Marketing</td>
+                                <td>65000</td>
+                                <td>2023-03-20</td>
+                            </tr>
+                            <tr>
+                                <td>EMP003</td>
+                                <td></td>
+                                <td>invalid-email</td>
+                                <td>Sales</td>
+                                <td>80000</td>
+                                <td>2023-02-10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p><em>Notice: Row 3 has a missing name and invalid email - the service will detect and report these issues!</em></p>
+            </section>
+
+            <!-- Validation Examples -->
+            <section class="section fade-in">
+                <h2>✅ Validation Examples</h2>
+                <p>Here are some common validation rules you can apply to your data:</p>
+                
+                <div class="validation-examples">
+                    <div class="validation-card">
+                        <h4>🚫 Null Value Checks</h4>
+                        <p>Ensure critical fields are never empty</p>
+                        <code>employee_id, first_name, email</code>
+                    </div>
+                    
+                    <div class="validation-card">
+                        <h4>🆔 Uniqueness Validation</h4>
+                        <p>Check for duplicate values</p>
+                        <code>employee_id, email, ssn</code>
+                    </div>
+                    
+                    <div class="validation-card">
+                        <h4>📧 Format Validation</h4>
+                        <p>Verify data follows correct patterns</p>
+                        <code>Email: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$</code>
+                    </div>
+                    
+                    <div class="validation-card">
+                        <h4>📊 Range Validation</h4>
+                        <p>Ensure numeric values are reasonable</p>
+                        <code>salary: 30,000 - 200,000</code>
+                    </div>
+                    
+                    <div class="validation-card">
+                        <h4>📅 Date Range Validation</h4>
+                        <p>Check dates fall within expected periods</p>
+                        <code>hire_date: 2020-01-01 to 2024-12-31</code>
+                    </div>
+                    
+                    <div class="validation-card">
+                        <h4>📝 Allowed Values</h4>
+                        <p>Restrict to predefined options</p>
+                        <code>department: Engineering, Sales, Marketing, HR</code>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Critical Data Elements -->
+            <section class="section fade-in">
+                <h2>⭐ Critical Data Elements</h2>
+                <p>Identify your most important fields for enhanced monitoring and prioritized reporting. Critical columns receive:</p>
+                
+                <ul class="benefits">
+                    <li><span class="highlight">Priority analysis</span> - Checked first and highlighted in reports</li>
+                    <li><span class="highlight">Enhanced validation</span> - Additional quality checks and monitoring</li>
+                    <li><span class="highlight">Special alerts</span> - Issues flagged with higher priority</li>
+                    <li><span class="highlight">Executive summary</span> - Critical field status in overview dashboard</li>
+                </ul>
+
+                <div class="example-box">
+                    Example Critical Columns:<br>
+                    • employee_id (Primary identifier)<br>
+                    • email (Contact information)<br>
+                    • salary (Financial data)<br>
+                    • hire_date (Compliance tracking)
+                </div>
+            </section>
+
+            <!-- What you get -->
+            <section class="section fade-in">
+                <h2>📊 What You'll Receive</h2>
+                
+                <div class="report-preview">
+                    <h4>📋 Interactive HTML Report</h4>
+                    <div class="preview-tabs">
+                        <span class="preview-tab">📊 Overview</span>
+                        <span class="preview-tab">✅ Validations</span>
+                        <span class="preview-tab">📈 Field Summary</span>
+                    </div>
+                    <ul class="benefits">
+                        <li><strong>Executive Dashboard</strong> - High-level quality metrics and charts</li>
+                        <li><strong>Detailed Results</strong> - Complete validation results with pass/fail rates</li>
+                        <li><strong>Field Analysis</strong> - Statistics and patterns for each column</li>
+                        <li><strong>Data Type Detection</strong> - Automatic classification of your data</li>
+                        <li><strong>Quality Scores</strong> - Overall and field-level quality ratings</li>
+                        <li><strong>Export Options</strong> - CSV exports for further analysis</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Benefits -->
+            <section class="section fade-in">
+                <h2>🎯 Key Benefits</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3><span class="icon">⏱️</span>Save Time</h3>
+                        <p>Automate manual data checking processes. What used to take hours now takes minutes.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">🎯</span>Improve Accuracy</h3>
+                        <p>Catch data quality issues before they impact your analysis or decision-making.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">📋</span>Ensure Compliance</h3>
+                        <p>Meet data governance requirements with documented validation processes and audit trails.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">👥</span>Better Collaboration</h3>
+                        <p>Share professional reports with stakeholders and data consumers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">📈</span>Data Confidence</h3>
+                        <p>Make decisions with confidence knowing your data has been thoroughly validated.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3><span class="icon">📧</span>Email Reports</h3>
+                        <p>Receive professional HTML reports directly in your email for easy sharing with stakeholders and team members.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started Instructions -->
+            <div class="cta-section">
+                <h2>Ready to Validate Your Data? 🚀</h2>
+                <p style="font-size: 1.2em; margin: 20px 0;">Start ensuring data quality and building confidence in your datasets today.</p>
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <h3 style="margin-top: 0; color: #60a5fa;">🔧 How to Use This Toolkit</h3>
+                    <p style="margin: 15px 0;">This documentation guide was downloaded from the <strong>Data Quality Toolkit App</strong>.</p>
+                    <p style="margin: 15px 0;">To validate your data, please return to the Streamlit application where you can:</p>
+                    <ul style="text-align: left; display: inline-block; margin: 15px 0;">
+                        <li>📁 Upload your CSV files</li>
+                        <li>⚙️ Configure validation rules</li>
+                        <li>🎯 Mark critical data elements</li>
+                        <li>📊 Generate comprehensive reports</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 20px; opacity: 0.9; font-style: italic;">Close this guide and return to the app to get started!</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Smooth scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Hover effects removed for professional appearance
+    </script>
+</body>
+</html>
