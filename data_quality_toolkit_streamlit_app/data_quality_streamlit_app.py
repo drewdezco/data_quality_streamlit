@@ -1161,7 +1161,7 @@ def main():
                             )
                         
                         with col_score:
-                            # Square overall score box
+                            # Square overall score box - aligned with table
                             st.markdown(f"""
                             <div style="
                                 background: rgba(255, 255, 255, 0.05);
@@ -1169,11 +1169,12 @@ def main():
                                 border-radius: 8px;
                                 padding: 1.5rem;
                                 text-align: center;
-                                height: 140px;
+                                height: 120px;
                                 display: flex;
                                 flex-direction: column;
                                 justify-content: center;
                                 align-items: center;
+                                margin-top: 0;
                             ">
                                 <div style="
                                     color: #e5e7eb;
